@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from 'commander';
+import { startServer } from './server';
 
 function validatePort(port){// response: {isValid, errorMessage, validatedPort(null otherwise)}
   if( port === undefined || port === null || String(port).trim() === ""){// Check if port is empty
