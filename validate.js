@@ -87,7 +87,8 @@ export function validate(port, origin){
   if(!isValid) return {
     isValid : false,
     errorMessage : errorMessage,
-    validatedPort : null
+    validatedPort : null,
+    validatedOrigin : null
   }
 
   let validatedOrigin = '';
@@ -95,6 +96,7 @@ export function validate(port, origin){
   if(!isValid) return {
     isValid : false,
     errorMessage : errorMessage,
+    validatedPort : null,
     validatedOrigin : null
   }
 
