@@ -82,7 +82,7 @@ function validateURL(url){// response: {isValid, errorMessage, Validated-URL-str
   return {
     isValid : true,
     errorMessage: null,
-    validatedURL : parsedUrl.origin
+    validatedURL : parsedUrl.href
   }
 }
 
