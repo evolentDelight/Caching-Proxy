@@ -52,10 +52,10 @@ function validateOrigin(origin){// response: {isValid, errorMessage, validatedOr
     }
   }
 
-  let parsedOrigin;
+  let parsedUrl;
 
   try{
-    parsedOrigin = new URL(origin);// check if valid origin via JS's built-in origin constructor
+    parsedUrl = new URL(origin);// check if valid origin via JS's built-in origin constructor
   } catch {
     return {
       isValid : false,
@@ -64,7 +64,7 @@ function validateOrigin(origin){// response: {isValid, errorMessage, validatedOr
     }
   }
 
-  if(parsedOrigin.protocol !== "http:" && parsedOrigin.protocol !== "https:"){// Check if origin has correct protocol
+  if(parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:"){// Check if origin has correct protocol
     return {
       isValid : false,
       errorMessage : `Origin must start with http:// or https://. Current input: ${origin}`,
@@ -72,7 +72,7 @@ function validateOrigin(origin){// response: {isValid, errorMessage, validatedOr
     }
   }
 
-  if(!parsedOrigin.hostname){// Check if origin has a hostname
+  if(!parsedUrl.hostname){// Check if origin has a hostname
     return {
       isValid : false,
       errorMessage: `origin must include a hostname`,
@@ -83,7 +83,7 @@ function validateOrigin(origin){// response: {isValid, errorMessage, validatedOr
   return {
     isValid : true,
     errorMessage: null,
-    validatedOrigin : parsedOrigin.origin
+    validatedOrigin : parsedUrl.origin
   }
 }
 
