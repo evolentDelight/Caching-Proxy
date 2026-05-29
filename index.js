@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from 'commander';
-import { startServer } from './server';
+import { startServer } from './server.js';
 
 function validatePort(port){// response: {isValid, errorMessage, validatedPort(null otherwise)}
   if( port === undefined || port === null || String(port).trim() === ""){// Check if port is empty
@@ -43,47 +43,47 @@ function validatePort(port){// response: {isValid, errorMessage, validatedPort(n
   }
 }
 
-function validateURL(url){// response: {isValid, errorMessage, Validated-URL-string(null otherwise)}
-  if( url === undefined || url === null | String(url).trim() === ""){// Check if URL is empty
+function validateOrigin(origin){// response: {isValid, errorMessage, validatedOrigin(null otherwise)}
+  if( origin === undefined || origin === null | String(origin).trim() === ""){// Check if origin is empty
     return{
       isValid : false,
-      errorMessage: `URL is empty. Current input: '${url}`,
-      validatedURL : null
+      errorMessage: `Origin is empty. Current input: '${origin}`,
+      validatedOrigin : null
     }
   }
 
-  let parsedUrl;
+  let parsedOrigin;
 
   try{
-    parsedUrl = new URL(url);// check if valid URL via JS's built-in URL constructor
+    parsedOrigin = new URL(origin);// check if valid origin via JS's built-in origin constructor
   } catch {
     return {
       isValid : false,
-      errorMessage : `Entered URL must be valid. Current input: ${url}`,
-      validatedURL : null
+      errorMessage : `Entered origin must be valid. Current input: ${origin}`,
+      validatedOrigin : null
     }
   }
 
-  if(parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:"){// Check if URL has correct protocol
+  if(parsedOrigin.protocol !== "http:" && parsedOrigin.protocol !== "https:"){// Check if origin has correct protocol
     return {
       isValid : false,
-      errorMessage : `URL must start with http:// or https://. Current input: ${url}`,
-      validatedURL : null
+      errorMessage : `Origin must start with http:// or https://. Current input: ${origin}`,
+      validatedOrigin : null
     }
   }
 
-  if(!parsedUrl.hostname){// Check if URL has a hostname
+  if(!parsedOrigin.hostname){// Check if origin has a hostname
     return {
       isValid : false,
-      errorMessage: `URL must include a hostname`,
-      validatedURL : null
+      errorMessage: `origin must include a hostname`,
+      validatedOrigin : null
     }
   }
 
   return {
     isValid : true,
     errorMessage: null,
-    validatedURL : parsedUrl.href
+    validatedOrigin : parsedOrigin.origin
   }
 }
 
@@ -94,30 +94,30 @@ program
 
 program
   .option('-p, --port <number>', 'port on which the caching proxy server will run')
-  .option('-o, --origin <url>', 'URL of the server to which the requests will be forwarded to')
+  .option('-o, --origin <origin>', 'origin of the server to which the requests will be forwarded to')
   .option('-c, --clear-cache', 'Clear the cache')
   .action((options) =>{
     let port = options.port;
-    let url = options.origin;
+    let origin = options.origin;
 
     if(options.clearCache){
       console.log('clear cache requested')
       return;
     }
 
-    if( !port || !url ){
+    if( !port || !origin ){
       program.error("Missing required options: --port and --origin are required unless --clear-cache is used")
     }
 
     let {isValid, errorMessage, validatedPort} = validatePort(port)
     if(!isValid) program.error(errorMessage);
 
-    let validatedURL = "";
-    ({isValid, errorMessage, validatedURL} = validateURL(url))
+    let validatedOrigin = "";
+    ({isValid, errorMessage, validatedOrigin} = validateOrigin(origin))
     if(!isValid) program.error(errorMessage);
 
-    console.log(validatedPort)
-    console.log(validatedURL)
+    // Start Server
+    startServer(validatedPort, validatedOrigin);
   })
 
 function errorColor(str){
@@ -129,6 +129,5 @@ program.configureOutput({
     process.stderr.write(`${errorColor(`[ERROR] :`)} ${str}`)
   }
 })
-
 
 program.parse();
