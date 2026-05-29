@@ -119,4 +119,15 @@ program
     console.log(validatedURL)
   })
 
+function errorColor(str){
+  return `\x1b[31m${str}\x1b[0m`;
+}
+
+program.configureOutput({
+  writeErr: (str) => {
+    process.stderr.write(`${errorColor(`[ERROR] :`)} ${str}`)
+  }
+})
+
+
 program.parse();
