@@ -2,22 +2,40 @@
 
 import { program } from 'commander';
 
-function validatePort(port){// response: {isValid, errorMessage, Validated-Port-Number(null otherwise)}
+function validatePort(port){// response: {isValid, errorMessage, validatedPort(null otherwise)}
+  if( port === undefined || port === null || String(port).trim() === ""){// Check if port is empty
+    return {
+      isValid : false,
+      errorMessage: `Port number is empty. Current input: '${port}'`,
+      validatedPort : null
+    }
+  }
+
   const number = Number(port);
 
-  if(!Number.isInteger(number)) return {// Check if entered port number is a whole number
-    isValid : false,
-    errorMessage : `Entered Port: ${number} is not a whole number`,
-    port : null
+  if(Number.isNaN(number)){// Check if port is a number
+    return {
+      isValid : false,
+      errorMessage : `Port number must be a number. Current input: '${port}'`,
+      validatedPort : null
+    }
   }
 
-  if(number < 1 || number > 65535) return {
-    isValid : false,
-    errorMessage : `Port number must be between 1 and 65535. Current input: ${number}`,
-    port : null
-  }
+  if(!Number.isInteger(number))// Check if entered port number is a whole number
+    return {
+      isValid : false,
+      errorMessage : `Entered Port: '${number}' is not a whole number`,
+      validatedPort : null
+    }
 
-  return {
+  if(number < 1 || number > 65535)// Check if the port number is within standardized range
+    return {
+      isValid : false,
+      errorMessage : `Port number must be between 1 and 65535. Current input: '${number}'`,
+      validatedPort : null
+    }
+
+  return {// Port has been validated
     isValid : true,
     errorMessage: null,
     validatedPort : number
