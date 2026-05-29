@@ -43,10 +43,46 @@ function validatePort(port){// response: {isValid, errorMessage, validatedPort(n
 }
 
 function validateURL(url){// response: {isValid, errorMessage, Validated-URL-string(null otherwise)}
+  if( url === undefined || url === null | String(url).trim() === ""){// Check if URL is empty
+    return{
+      isValid : false,
+      errorMessage: `URL is empty. Current input: '${url}`,
+      validatedURL : null
+    }
+  }
+
+  let parsedUrl;
+
+  try{
+    parsedUrl = new URL(url);// check if valid URL via JS's built-in URL constructor
+  } catch {
+    return {
+      isValid : false,
+      errorMessage : `Entered URL must be valid. Current input: ${url}`,
+      validatedURL : null
+    }
+  }
+
+  if(parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:"){// Check if URL has correct protocol
+    return {
+      isValid : false,
+      errorMessage : `URL must start with http:// or https://. Current input: ${url}`,
+      validatedURL : null
+    }
+  }
+
+  if(!parsedUrl.hostname){// Check if URL has a hostname
+    return {
+      isValid : false,
+      errorMessage: `URL must include a hostname`,
+      validatedURL : null
+    }
+  }
+
   return {
     isValid : true,
     errorMessage: null,
-    validatedUrl : url
+    validatedURL : parsedUrl.origin
   }
 }
 
@@ -72,11 +108,11 @@ program
       program.error("Missing required options: --port and --origin are required unless --clear-cache is used")
     }
 
-    let {isValid, errorMessage, validatedPort} = validatePort(options.port)
+    let {isValid, errorMessage, validatedPort} = validatePort(port)
     if(!isValid) program.error(errorMessage);
 
     let validatedURL = "";
-    ({isValid, errorMessage, validatedURL} = validateURL(options.url))
+    ({isValid, errorMessage, validatedURL} = validateURL(url))
     if(!isValid) program.error(errorMessage);
 
     console.log(validatedPort)
