@@ -20,11 +20,11 @@ function validatePort(port){// response: {isValid, errorMessage, Validated-Port-
   return {
     isValid : true,
     errorMessage: null,
-    port : number
+    validatedPort : number
   }
 }
 
-function validateURL(url){
+function validateURL(url){// response: {isValid, errorMessage, Validated-URL-string(null otherwise)}
   return {
     isValid : true,
     errorMessage: null,
