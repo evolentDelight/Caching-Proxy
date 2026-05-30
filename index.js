@@ -3,6 +3,7 @@
 import { program } from 'commander';
 import { validate } from './validate.js'
 import { startServer } from './server.js';
+import { clearCache } from './cache.js';
 
 program
   .name('caching-proxy')
@@ -19,6 +20,8 @@ program
 
     if(options.clearCache){
       console.log('clear cache requested')
+      clearCache();
+      console.log(`Cache cleared`)
       return;
     }
 

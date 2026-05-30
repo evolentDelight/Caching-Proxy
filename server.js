@@ -2,20 +2,29 @@ import http from 'node:http';
 import { getFromCache, saveToCache } from './cache.js';
 
 async function handleRequest(req, res, origin){
-  const cacheKey = req.url;
+  const cacheKey = `${req.method} ${req.url}`;
 
-  const cachedResponse = getFromCache(cacheKey);
+  const cachedResponse = await getFromCache(cacheKey);
 
   if(cachedResponse){
     sendResponse(res, cachedResponse, "HIT");
     return;
   }
 
-  const originalResponse = await fetchFromOrigin(req, origin);
+  const originResponse = await fetchFromOrigin(req, origin);
 
-  saveToCache(cacheKey, originResponse);
+  await saveToCache(cacheKey, originResponse);
 
   sendResponse(res, originResponse, "MISS");
+}
+
+function createForwardHeaders(reqHeaders){
+  const headers = {...reqHeaders};
+
+  delete headers.host;
+  delete headers['accept-encoding'];
+
+  return headers;
 }
 
 async function fetchFromOrigin(req, origin){
@@ -23,10 +32,12 @@ async function fetchFromOrigin(req, origin){
 
   const response = await fetch(targetUrl, {
     method: req.method,
-    headers: req.headers,
+    headers: createForwardHeaders(req.headers),
   })
 
-  const body = await response.text();
+  const arrayBuffer = await response.arrayBuffer();
+  const body = Buffer.from(arrayBuffer);
+
   const headers = {};
 
   for(const [key, value] of response.headers){
@@ -69,7 +80,7 @@ export function startServer(port, origin){
       await handleRequest(req, res, origin);
     } catch(error){
       res.statusCode = 500;
-      res.end("Proxy server error");
+      res.end(`Proxy server error: ${error}`);
     }
   })
 
