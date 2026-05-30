@@ -1,3 +1,6 @@
 node_modules/
 
 unused/
+
+.cache/*
+!.cache/README.md
