@@ -2,7 +2,8 @@ import http from 'node:http';
 import { getFromCache, saveToCache } from './cache.js';
 
 async function handleRequest(req, res, origin){
-  const cacheKey = `${req.method} ${req.url}`;
+  const targetUrl = new URL(req.url, origin).href;
+  const cacheKey = `${req.method} ${targetUrl}`;
 
   const cachedResponse = await getFromCache(cacheKey);
 
@@ -11,7 +12,7 @@ async function handleRequest(req, res, origin){
     return;
   }
 
-  const originResponse = await fetchFromOrigin(req, origin);
+  const originResponse = await fetchFromOrigin(req, targetUrl);
 
   await saveToCache(cacheKey, originResponse);
 
@@ -27,9 +28,7 @@ function createForwardHeaders(reqHeaders){
   return headers;
 }
 
-async function fetchFromOrigin(req, origin){
-  const targetUrl = new URL(req.url, origin);
-
+async function fetchFromOrigin(req, targetUrl){
   const response = await fetch(targetUrl, {
     method: req.method,
     headers: createForwardHeaders(req.headers),
