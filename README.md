@@ -13,7 +13,7 @@ The proxy adds an `X-Cache` response header to indicate whether the response cam
 
 # How To Use
 
-## Download NodeJS
+## Install NodeJS
 
 This application requires Node.js to run.
 
@@ -93,7 +93,7 @@ caching-proxy --clear-cache
 
 After clearing the cache, requesting a previously cached resource again will require the proxy to retrieve it from the origin server.
 
-The response should therefore return:
+The response should return:
 
 ```text
 X-Cache: MISS
@@ -107,7 +107,7 @@ The port must:
 
 - Be a number
 - Be a whole number
-- Be between ports `1` and `65535`
+- Be between `1` and `65535`
 
 The origin must:
 
